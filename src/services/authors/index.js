@@ -1,13 +1,13 @@
 import express from "express";
 import models from "../../db/models/index.js";
-const { Author } = models;
+const { Author, Article } = models;
 const router = express.Router();
 
 router
   .route("/")
   .get(async (req, res, next) => {
     try {
-      const authors = await Author.findAll();
+      const authors = await Author.findAll({ include: Article });
       res.send(authors);
     } catch (error) {
       console.log(error);

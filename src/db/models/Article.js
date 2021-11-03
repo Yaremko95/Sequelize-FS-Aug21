@@ -23,13 +23,13 @@ const Article = sequelize.define("article", {
 
   //Way 3
 
-  authorId: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: "authors",
-      key: "id",
-    },
-  },
+  //   authorId: {
+  //     type: DataTypes.INTEGER,
+  //     references: {
+  //       model: "authors",
+  //       key: "id",
+  //     },
+  //   },
 
   // Way 2.
   //   author_id:{
@@ -37,4 +37,5 @@ const Article = sequelize.define("article", {
   //   }
 });
 
+//Article.sync({force:true})
 export default Article;
