@@ -56,6 +56,12 @@ router
   })
   .delete(async (req, res, next) => {
     try {
+      const rows = await Author.destroy({
+        where: {
+          id: req.params.id,
+        },
+      });
+      res.send({ rows });
     } catch (error) {
       console.log(error);
       next(error);
