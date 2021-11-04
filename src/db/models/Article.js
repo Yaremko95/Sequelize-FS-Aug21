@@ -5,8 +5,8 @@ const { DataTypes } = s;
 const Article = sequelize.define("article", {
   id: {
     primaryKey: true,
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
   },
   title: {
     type: DataTypes.TEXT,

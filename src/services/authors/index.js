@@ -1,5 +1,7 @@
 import express from "express";
 import models from "../../db/models/index.js";
+import Review from "../../db/models/Review.js";
+import { authors } from "../../data/authors.js";
 const { Author, Article } = models;
 const router = express.Router();
 
@@ -7,7 +9,9 @@ router
   .route("/")
   .get(async (req, res, next) => {
     try {
-      const authors = await Author.findAll({ include: Article });
+      const authors = await Author.findAll({
+        include: { model: Article, include: Review },
+      });
       res.send(authors);
     } catch (error) {
       console.log(error);
@@ -23,6 +27,16 @@ router
       next(error);
     }
   });
+
+router.route("/bulkCreate").post(async (req, res, next) => {
+  try {
+    const data = await Author.bulkCreate(authors);
+    res.send(data);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
 
 router
   .route("/:id")
