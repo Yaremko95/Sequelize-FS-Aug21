@@ -2,6 +2,8 @@ import express from "express";
 import models from "../../db/models/index.js";
 import { articles } from "../../data/articles.js";
 const { Article, Author, ArticleCategory, Category } = models;
+import sequelize from "sequelize";
+const { Op } = sequelize;
 
 const router = express.Router();
 
@@ -9,11 +11,50 @@ router
   .route("/")
   .get(async (req, res, next) => {
     try {
-      const articles = await Article.findAll({
-        include: [{ model: Category, through: { attributes: [] } }, Author],
+      console.log(req.query);
+      const articles = await Article.findAndCountAll({
+        include: [
+          {
+            model: Category,
+            // where: {
+            //   ...(req.query.category && {
+            //     name: [req.query.category],
+            //   }),
+            // },
+            through: { attributes: [] },
+          },
+          Author,
+        ],
         //   order: [["createdAt", "DESC"]],
+
+        //SEARCH BY TITLE ONLY
+        // where: {
+        //   ...(req.query.title && {
+        //     title: {
+        //       [Op.iLike]: `%${req.query.title}%`,
+        //     },
+        //   }),
+        // },
+
+        //SEARCH BY TITLE OR BY CONTENT
+
+        where: {
+          ...(req.query.search && {
+            [Op.or]: [
+              { title: { [Op.iLike]: `%${req.query.search}%` } },
+              { content: { [Op.iLike]: `%${req.query.search}%` } },
+            ],
+          }),
+        },
+
+        limit: req.query.size,
+        offset: parseInt(req.query.size * req.query.page),
       });
-      res.send(articles);
+      res.send({
+        data: articles.rows,
+        total: articles.count,
+        pages: Math.ceil(articles.count / req.query.size),
+      });
     } catch (error) {
       console.log(error);
       next(error);
